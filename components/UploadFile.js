@@ -14,7 +14,7 @@ export default function UploadFile() {
     formData.append("folderId", folderId);
     formData.append("owner_id", 1);
 
-    await fetch("http://localhost:5000/api/files/upload", {
+    await fetch("https://cloud-backend-ahwr.onrender.com//api/files/upload", {
       method: "POST",
       body: formData
     });

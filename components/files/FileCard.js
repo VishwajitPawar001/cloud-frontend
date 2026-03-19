@@ -7,7 +7,7 @@ export default function FileCard({ file, reload }) {
   const handleDelete = async () => {
     try {
 
-      await fetch(`http://localhost:5000/api/files/${file.id}`, {
+      await fetch(`https://cloud-backend-ahwr.onrender.com//api/files/${file.id}`, {
         method: "DELETE"
       });
 
@@ -39,7 +39,7 @@ export default function FileCard({ file, reload }) {
 
         {isImage ? (
           <img
-            src={`http://localhost:5000/uploads/${file.name}`}
+            src={`https://cloud-backend-ahwr.onrender.com//uploads/${file.name}`}
             alt={file.name}
             className="w-full h-full object-cover"
           />
@@ -60,7 +60,7 @@ export default function FileCard({ file, reload }) {
       <div className="flex justify-between items-center text-xs mt-1">
 
         <a
-          href={`http://localhost:5000/api/files/download/${file.name}`}
+          href={`https://cloud-backend-ahwr.onrender.com//api/files/download/${file.name}`}
           className="text-blue-600 hover:underline"
         >
           Download

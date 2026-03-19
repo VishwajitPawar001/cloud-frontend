@@ -35,7 +35,7 @@ export default function Trash() {
   // ✅ Restore file
   const handleRestore = async (id) => {
     try {
-      await fetch(`http://localhost:5000/api/files/restore/${id}`, {
+      await fetch(`https://cloud-backend-ahwr.onrender.com//api/files/restore/${id}`, {
         method: "PUT"
       });
 
@@ -50,7 +50,7 @@ export default function Trash() {
   // ✅ Permanent delete
   const handlePermanentDelete = async (id) => {
     try {
-      await fetch(`http://localhost:5000/api/files/permanent/${id}`, {
+      await fetch(`https://cloud-backend-ahwr.onrender.com//api/files/permanent/${id}`, {
         method: "DELETE"
       });
 

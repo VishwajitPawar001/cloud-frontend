@@ -29,7 +29,7 @@ export default function FileGrid({ searchQuery }) {
 
       const fileData = await getFiles();
 
-      const folderRes = await fetch("http://localhost:5000/api/folders");
+      const folderRes = await fetch("https://cloud-backend-ahwr.onrender.com//api/folders");
       const folderData = await folderRes.json();
 
       const safeFiles = Array.isArray(fileData) ? fileData : [];

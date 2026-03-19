@@ -38,7 +38,7 @@ export default function Navbar({ onSearch }) {
             const name = prompt("Enter folder name");
             if (!name) return;
 
-            await fetch("http://localhost:5000/api/folders/create", {
+            await fetch("https://cloud-backend-ahwr.onrender.com//api/folders/create", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json"
