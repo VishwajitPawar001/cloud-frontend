@@ -1,11 +1,34 @@
-import api from "./api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const getFiles = async () => {
-  const res = await api.get("/files");
-  return res.data.files;
+  const res = await fetch(`${API_URL}/api/files`);
+  const data = await res.json();
+  return data.files;
 };
 
 export const uploadFile = async (formData) => {
-  const res = await api.post("/files/upload", formData);
-  return res.data;
+  const res = await fetch(`${API_URL}/api/files/upload`, {
+    method: "POST",
+    body: formData,
+  });
+
+  return res.json();
+};
+
+export const deleteFile = async (id) => {
+  await fetch(`${API_URL}/api/files/${id}`, {
+    method: "DELETE",
+  });
+};
+
+export const restoreFile = async (id) => {
+  await fetch(`${API_URL}/api/files/restore/${id}`, {
+    method: "PUT",
+  });
+};
+
+export const permanentDeleteFile = async (id) => {
+  await fetch(`${API_URL}/api/files/permanent/${id}`, {
+    method: "DELETE",
+  });
 };
