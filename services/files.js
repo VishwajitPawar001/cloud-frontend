@@ -1,34 +1,36 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import api from "./api";
 
-export const getFiles = async () => {
-  const res = await fetch(`${API_URL}/api/files`);
-  const data = await res.json();
-  return data.files;
-};
-
+// Upload file
 export const uploadFile = async (formData) => {
-  const res = await fetch(`${API_URL}/api/files/upload`, {
-    method: "POST",
-    body: formData,
+  const res = await api.post("/api/files/upload", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
   });
 
-  return res.json();
+  return res.data;
 };
 
+// Get all files
+export const getFiles = async () => {
+  const res = await api.get("/api/files");
+  return res.data.files;
+};
+
+// Soft delete (move to trash)
 export const deleteFile = async (id) => {
-  await fetch(`${API_URL}/api/files/${id}`, {
-    method: "DELETE",
-  });
+  const res = await api.delete(`/api/files/${id}`);
+  return res.data;
 };
 
+// Restore file
 export const restoreFile = async (id) => {
-  await fetch(`${API_URL}/api/files/restore/${id}`, {
-    method: "PUT",
-  });
+  const res = await api.put(`/api/files/restore/${id}`);
+  return res.data;
 };
 
+// Permanent delete
 export const permanentDeleteFile = async (id) => {
-  await fetch(`${API_URL}/api/files/permanent/${id}`, {
-    method: "DELETE",
-  });
+  const res = await api.delete(`/api/files/permanent/${id}`);
+  return res.data;
 };
