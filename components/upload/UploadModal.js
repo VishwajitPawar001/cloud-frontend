@@ -21,11 +21,7 @@ export default function UploadModal({ onUploadSuccess, folderId = "1" }) {
       formData.append("folder_id", folderId);  // folder where file will be stored
       formData.append("owner_id", "1");        // temp user id
 
-      await api.post("/api/files/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await api.post("/api/files/upload", formData);
 
       alert("File uploaded successfully");
 
