@@ -5,15 +5,17 @@ export const getFolders = async () => {
     const res = await api.get("/api/folders");
     return res.data.folders;
   } catch (err) {
-    console.error("GET FOLDERS ERROR:", err.response?.data || err.message);
-    return [];
-  }
-};
+    console.log("Retrying folders request...");
 
-export const createFolder = async (name) => {
-  const res = await api.post("/api/folders/create", {
-    name,
-    owner_id: null
-  });
-  return res.data;
+    // Retry once after 2 seconds (Render cold start fix)
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    try {
+      const res = await api.get("/api/folders");
+      return res.data.folders;
+    } catch (err) {
+      console.error("Failed to load folders:", err.message);
+      return [];
+    }
+  }
 };
