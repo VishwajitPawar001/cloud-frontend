@@ -44,32 +44,28 @@ export default function FileCard({ file, reload }) {
   };
 
   // ✅ SHARE FILE
-  const handleShare = async () => {
-    const email = prompt("Enter email to share with:");
-
-    if (!email) return;
-
-    try {
-      await fetch("https://cloud-backend-ahwr.onrender.com/api/files/share", {
-        method: "POST",
+const handleShare = async () => {
+  try {
+    const res = await fetch(
+      `https://cloud-backend-ahwr.onrender.com/api/files/share-link/${file.id}`,
+      {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({
-          file_id: file.id,
-          email: email,
-          permission: "view",
-        }),
-      });
+      }
+    );
 
-      alert("File shared successfully");
+    const data = await res.json();
 
-    } catch (error) {
-      console.error("Share error:", error);
-      alert("Failed to share file");
-    }
-  };
+    navigator.clipboard.writeText(data.link);
+
+    alert("Share link copied to clipboard!");
+
+  } catch (error) {
+    console.error(error);
+    alert("Failed to generate share link");
+  }
+};
 
   return (
     <div className="card hover:shadow-lg transition flex flex-col gap-3">
