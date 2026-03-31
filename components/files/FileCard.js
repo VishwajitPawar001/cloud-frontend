@@ -21,7 +21,7 @@ export default function FileCard({ file, reload }) {
     }
   };
 
-  // ✅ FORCE DOWNLOAD (works with Supabase URLs)
+  // ✅ FORCE DOWNLOAD
   const handleDownload = async () => {
     try {
       const response = await fetch(file.url);
@@ -40,6 +40,34 @@ export default function FileCard({ file, reload }) {
     } catch (error) {
       console.error("Download error:", error);
       alert("Failed to download file");
+    }
+  };
+
+  // ✅ SHARE FILE
+  const handleShare = async () => {
+    const email = prompt("Enter email to share with:");
+
+    if (!email) return;
+
+    try {
+      await fetch("https://cloud-backend-ahwr.onrender.com/api/files/share", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          file_id: file.id,
+          email: email,
+          permission: "view",
+        }),
+      });
+
+      alert("File shared successfully");
+
+    } catch (error) {
+      console.error("Share error:", error);
+      alert("Failed to share file");
     }
   };
 
@@ -73,6 +101,14 @@ export default function FileCard({ file, reload }) {
           className="text-blue-600 hover:underline"
         >
           Download
+        </button>
+
+        {/* Share */}
+        <button
+          onClick={handleShare}
+          className="text-green-600 hover:underline"
+        >
+          Share
         </button>
 
         {/* Delete */}
