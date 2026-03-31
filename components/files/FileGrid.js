@@ -10,6 +10,7 @@ export default function FileGrid({ searchQuery }) {
   const [files, setFiles] = useState([]);
   const [folders, setFolders] = useState([]);
   const [filteredFiles, setFilteredFiles] = useState([]);
+  const [filteredFolders, setFilteredFolders] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,22 +22,22 @@ export default function FileGrid({ searchQuery }) {
   }, []);
 
   useEffect(() => {
-    filterFiles();
-  }, [searchQuery, files]);
+    filterData();
+  }, [searchQuery, files, folders]);
 
   const loadData = async () => {
     try {
       setLoading(true);
 
-      // 🔥 Wake backend first (Render cold start fix)
+      // Wake backend (Render cold start)
       await fetch("https://cloud-backend-ahwr.onrender.com/");
-      await new Promise((res) => setTimeout(res, 2000));
+      await new Promise((res) => setTimeout(res, 1500));
 
-      // Load data
       const fileData = await getFiles();
       const folderData = await getFolders();
 
       const safeFiles = Array.isArray(fileData) ? fileData : [];
+      const safeFolders = Array.isArray(folderData) ? folderData : [];
 
       // Only root files
       const rootFiles = safeFiles.filter(
@@ -44,28 +45,43 @@ export default function FileGrid({ searchQuery }) {
       );
 
       setFiles(rootFiles);
+      setFolders(safeFolders);
       setFilteredFiles(rootFiles);
-      setFolders(folderData || []);
+      setFilteredFolders(safeFolders);
 
     } catch (err) {
-      console.error(err);
+      console.error("Load error:", err);
+
+      if (err?.response?.status === 401) {
+        localStorage.removeItem("token");
+        router.push("/login");
+      }
+
       setError("Failed to load data");
     } finally {
       setLoading(false);
     }
   };
 
-  const filterFiles = () => {
+  const filterData = () => {
     if (!searchQuery) {
       setFilteredFiles(files);
+      setFilteredFolders(folders);
       return;
     }
 
-    const filtered = files.filter(file =>
-      file.name?.toLowerCase().includes(searchQuery.toLowerCase())
+    const query = searchQuery.toLowerCase();
+
+    const filteredF = files.filter(file =>
+      file.name?.toLowerCase().includes(query)
     );
 
-    setFilteredFiles(filtered);
+    const filteredFo = folders.filter(folder =>
+      folder.name?.toLowerCase().includes(query)
+    );
+
+    setFilteredFiles(filteredF);
+    setFilteredFolders(filteredFo);
   };
 
   if (loading) {
@@ -80,14 +96,16 @@ export default function FileGrid({ searchQuery }) {
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
 
       {/* 📁 Folders */}
-      {folders.map(folder => (
+      {filteredFolders.map(folder => (
         <div
           key={folder.id}
           onClick={() => router.push(`/dashboard/folder/${folder.id}`)}
           className="card cursor-pointer flex flex-col items-center justify-center h-36 hover:shadow-lg transition"
         >
           <div className="text-5xl">📁</div>
-          <p className="text-sm mt-2">{folder.name}</p>
+          <p className="text-sm mt-2 text-center truncate w-full px-2">
+            {folder.name}
+          </p>
         </div>
       ))}
 

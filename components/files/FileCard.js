@@ -6,9 +6,11 @@ export default function FileCard({ file, reload }) {
 
   const handleDelete = async () => {
     try {
-
-      await fetch(`https://cloud-backend-ahwr.onrender.com//api/files/${file.id}`, {
-        method: "DELETE"
+      await fetch(`https://cloud-backend-ahwr.onrender.com/api/files/${file.id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
 
       if (reload) reload();
@@ -19,36 +21,20 @@ export default function FileCard({ file, reload }) {
     }
   };
 
-  // 📄 File Type Icon
-  const getIcon = () => {
-
-    const name = file.name?.toLowerCase();
-
-    if (name?.endsWith(".pdf")) return "📕";
-    if (name?.endsWith(".mp4")) return "🎬";
-
-    return "📄";
-  };
-
   return (
-
     <div className="card hover:shadow-lg transition flex flex-col gap-3">
 
-      {/* Preview / Icon */}
+      {/* Preview */}
       <div className="w-full h-28 flex items-center justify-center bg-gray-100 rounded-lg overflow-hidden">
-
         {isImage ? (
           <img
-            src={`https://cloud-backend-ahwr.onrender.com//uploads/${file.name}`}
+            src={file.url}
             alt={file.name}
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="text-4xl">
-            {getIcon()}
-          </div>
+          <div className="text-4xl">📄</div>
         )}
-
       </div>
 
       {/* File Name */}
@@ -59,13 +45,16 @@ export default function FileCard({ file, reload }) {
       {/* Actions */}
       <div className="flex justify-between items-center text-xs mt-1">
 
+        {/* Download from Supabase */}
         <a
-          href={`https://cloud-backend-ahwr.onrender.com//api/files/download/${file.name}`}
+          href={file.url}
+          target="_blank"
           className="text-blue-600 hover:underline"
         >
           Download
         </a>
 
+        {/* Delete */}
         <button
           onClick={handleDelete}
           className="text-red-500 hover:underline"
@@ -76,7 +65,5 @@ export default function FileCard({ file, reload }) {
       </div>
 
     </div>
-
   );
-
 }
