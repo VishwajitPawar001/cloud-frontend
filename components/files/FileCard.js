@@ -21,6 +21,28 @@ export default function FileCard({ file, reload }) {
     }
   };
 
+  // ✅ FORCE DOWNLOAD (works with Supabase URLs)
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(file.url);
+      const blob = await response.blob();
+
+      const blobUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = file.name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      window.URL.revokeObjectURL(blobUrl);
+
+    } catch (error) {
+      console.error("Download error:", error);
+      alert("Failed to download file");
+    }
+  };
+
   return (
     <div className="card hover:shadow-lg transition flex flex-col gap-3">
 
@@ -45,14 +67,13 @@ export default function FileCard({ file, reload }) {
       {/* Actions */}
       <div className="flex justify-between items-center text-xs mt-1">
 
-        {/* Download from Supabase */}
-        <a
-          href={file.url}
-          target="_blank"
+        {/* Download */}
+        <button
+          onClick={handleDownload}
           className="text-blue-600 hover:underline"
         >
           Download
-        </a>
+        </button>
 
         {/* Delete */}
         <button
