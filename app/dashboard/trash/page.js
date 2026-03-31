@@ -4,10 +4,9 @@ import { useEffect, useState } from "react";
 import Sidebar from "../../../components/layout/Sidebar";
 import Navbar from "../../../components/layout/Navbar";
 import FileCard from "../../../components/files/FileCard";
-import { getFiles } from "../../../services/files";
+import { getTrashFiles, restoreFile, permanentDeleteFile } from "../../../services/files";
 
 export default function Trash() {
-
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -17,14 +16,8 @@ export default function Trash() {
 
   const loadFiles = async () => {
     try {
-      const data = await getFiles();
-
-      const trashFiles = Array.isArray(data)
-        ? data.filter(file => file.is_deleted === true)
-        : [];
-
-      setFiles(trashFiles);
-
+      const data = await getTrashFiles();
+      setFiles(data || []);
     } catch (error) {
       console.error("Trash load error:", error);
     } finally {
@@ -32,38 +25,17 @@ export default function Trash() {
     }
   };
 
-  // ✅ Restore file
   const handleRestore = async (id) => {
-    try {
-      await fetch(`https://cloud-backend-ahwr.onrender.com//api/files/restore/${id}`, {
-        method: "PUT"
-      });
-
-      loadFiles();
-
-    } catch (error) {
-      console.error("Restore error:", error);
-      alert("Failed to restore file");
-    }
+    await restoreFile(id);
+    loadFiles();
   };
 
-  // ✅ Permanent delete
   const handlePermanentDelete = async (id) => {
-    try {
-      await fetch(`https://cloud-backend-ahwr.onrender.com//api/files/permanent/${id}`, {
-        method: "DELETE"
-      });
-
-      loadFiles();
-
-    } catch (error) {
-      console.error("Delete error:", error);
-      alert("Failed to delete permanently");
-    }
+    await permanentDeleteFile(id);
+    loadFiles();
   };
 
   return (
-
     <div className="flex min-h-screen bg-gray-50">
 
       <Sidebar />
@@ -95,9 +67,7 @@ export default function Trash() {
 
                   <FileCard file={file} />
 
-                  {/* Actions */}
                   <div className="flex justify-between text-xs">
-
                     <button
                       onClick={() => handleRestore(file.id)}
                       className="text-green-600 hover:underline"
@@ -111,7 +81,6 @@ export default function Trash() {
                     >
                       Delete Forever
                     </button>
-
                   </div>
 
                 </div>
@@ -127,7 +96,5 @@ export default function Trash() {
       </div>
 
     </div>
-
   );
-
 }

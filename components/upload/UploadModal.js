@@ -3,11 +3,13 @@
 import { useState } from "react";
 import api from "../../services/api";
 
-export default function UploadModal({ onUploadSuccess, folderId = "1" }) {
+export default function UploadModal({ onUploadSuccess, folderId }) {
+
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleUpload = async () => {
+
     if (!file) {
       alert("Please select a file");
       return;
@@ -17,17 +19,23 @@ export default function UploadModal({ onUploadSuccess, folderId = "1" }) {
       setLoading(true);
 
       const formData = new FormData();
-      formData.append("file", file);           // must match upload.single("file")
-      formData.append("folder_id", folderId);  // folder where file will be stored
-      formData.append("owner_id", "1");        // temp user id
+      formData.append("file", file);
 
-      await api.post("/api/files/upload", formData);
+      // IMPORTANT: Always send folder_id
+      if (folderId) {
+        formData.append("folder_id", Number(folderId));
+      } else {
+        formData.append("folder_id", 1); // root folder
+      }
 
-      alert("File uploaded successfully");
+      await api.post("/api/files/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       setFile(null);
 
-      // Refresh file list
       if (onUploadSuccess) {
         onUploadSuccess();
       }
@@ -62,7 +70,7 @@ export default function UploadModal({ onUploadSuccess, folderId = "1" }) {
         onClick={handleUpload}
         disabled={loading || !file}
         className={`btn-primary text-sm ${
-          loading || !file ? "opacity-50 cursor-not-allowed" : ""
+          loading ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
         {loading ? "Uploading..." : "Upload"}
