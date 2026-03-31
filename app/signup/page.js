@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { signupUser } from "../../services/auth";
 
 export default function Signup() {
@@ -12,9 +13,7 @@ export default function Signup() {
   const [password, setPassword] = useState("");
 
   const handleSignup = async () => {
-
     try {
-
       const data = await signupUser(email, password);
 
       if (data) {
@@ -23,16 +22,13 @@ export default function Signup() {
       } else {
         alert("Signup failed");
       }
-
     } catch (error) {
       console.error(error);
       alert("Error during signup");
     }
-
   };
 
   return (
-
     <div className="flex items-center justify-center min-h-screen px-4">
 
       <div className="w-full max-w-md bg-white p-6 rounded-xl shadow">
@@ -62,20 +58,16 @@ export default function Signup() {
           Sign Up
         </button>
 
-        <p className="text-sm text-gray-500 text-center mt-4">
+        {/* 🔁 Go to Login */}
+        <p className="text-sm text-center mt-4">
           Already have an account?{" "}
-          <span
-            className="text-blue-600 cursor-pointer"
-            onClick={() => router.push("/login")}
-          >
+          <Link href="/login" className="text-blue-500 hover:underline">
             Login
-          </span>
+          </Link>
         </p>
 
       </div>
 
     </div>
-
   );
-
 }

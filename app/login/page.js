@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { loginUser } from "../../services/auth";
 
 export default function Login() {
@@ -12,20 +13,22 @@ export default function Login() {
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
+    try {
+      const data = await loginUser(email, password);
 
-    const data = await loginUser(email, password);
-
-    if (data?.token) {
-      localStorage.setItem("token", data.token);
-      router.push("/dashboard");
-    } else {
-      alert("Login failed");
+      if (data?.token) {
+        localStorage.setItem("token", data.token);
+        router.push("/dashboard");
+      } else {
+        alert("Login failed");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Login error");
     }
-
   };
 
   return (
-
     <div className="flex items-center justify-center min-h-screen px-4">
 
       <div className="w-full max-w-md bg-white p-6 rounded-xl shadow">
@@ -55,10 +58,16 @@ export default function Login() {
           Login
         </button>
 
+        {/* 🔁 Go to Signup */}
+        <p className="text-sm text-center mt-4">
+          create account{" "}
+          <Link href="/signup" className="text-blue-500 hover:underline">
+            Sign up
+          </Link>
+        </p>
+
       </div>
 
     </div>
-
   );
-
 }
