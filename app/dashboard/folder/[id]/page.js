@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Sidebar from "../../../../components/layout/Sidebar";
 import Navbar from "../../../../components/layout/Navbar";
 import UploadModal from "../../../../components/upload/UploadModal";
@@ -13,13 +13,10 @@ export default function FolderPage() {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (id) {
-      loadFiles();
-    }
-  }, [id]);
+  // Load files function
+  const loadFiles = useCallback(async () => {
+    if (!id) return;
 
-  const loadFiles = async () => {
     try {
       setLoading(true);
 
@@ -31,7 +28,12 @@ export default function FolderPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  // Load when folder changes
+  useEffect(() => {
+    loadFiles();
+  }, [loadFiles]);
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -62,18 +64,23 @@ export default function FolderPage() {
           {/* Empty State */}
           {!loading && files.length === 0 && (
             <div className="text-gray-400 text-center mt-10">
-              <p>No files in this folder</p>
+              <p className="text-lg">No files in this folder</p>
+              <p className="text-sm">Upload files to get started</p>
             </div>
           )}
 
           {/* Files */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-
-            {files.map(file => (
-              <FileCard key={file.id} file={file} reload={loadFiles} />
-            ))}
-
-          </div>
+          {!loading && files.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+              {files.map(file => (
+                <FileCard
+                  key={file.id}
+                  file={file}
+                  reload={loadFiles}
+                />
+              ))}
+            </div>
+          )}
 
         </div>
 
