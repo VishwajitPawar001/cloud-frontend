@@ -11,9 +11,15 @@ export const uploadFile = async (formData) => {
   return res.data;
 };
 
-// Get all files
+// Get root files
 export const getFiles = async () => {
   const res = await api.get("/api/files");
+  return res.data.files;
+};
+
+// Get trash files
+export const getTrashFiles = async () => {
+  const res = await api.get("/api/files/trash");
   return res.data.files;
 };
 
